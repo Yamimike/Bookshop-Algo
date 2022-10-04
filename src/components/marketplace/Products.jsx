@@ -4,7 +4,7 @@ import AddProduct from "./AddProduct";
 import Product from "./Product";
 import Loader from "../utils/Loader";
 import {NotificationError, NotificationSuccess} from "../utils/Notifications";
-import {buyProductAction, createProductAction, deleteProductAction, getProductsAction,} from "../../utils/marketplace";
+import {buyProductAction, createProductAction, deleteProductAction, getProductsAction, likeAction, unlikeAction,} from "../../utils/marketplace";
 import PropTypes from "prop-types";
 import {Row} from "react-bootstrap";
 
@@ -12,12 +12,13 @@ const Products = ({address, fetchBalance}) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    // function to get list of products
     const getProducts = async () => {
         setLoading(true);
         getProductsAction()
             .then(products => {
                 if (products) {
-                    setProducts(products);
+                 setProducts(products);
                 }
             })
             .catch(error => {
@@ -62,6 +63,36 @@ const Products = ({address, fetchBalance}) => {
             })
     };
 
+    const likeProduct = async (product) => {
+        setLoading(true);
+        likeAction(address, product)
+          .then(() => {
+            toast(<NotificationSuccess text="Product liked successfully" />);
+            getProducts();
+            fetchBalance(address);
+          })
+          .catch((error) => {
+            console.log(error);
+            toast(<NotificationError text="Failed to like product." />);
+            setLoading(false);
+          });
+      };
+    
+      const unlikeProduct = async (product) => {
+        setLoading(true);
+        unlikeAction(address, product)
+          .then(() => {
+            toast(<NotificationSuccess text="Product unliked successfully" />);
+            getProducts();
+            fetchBalance(address);
+          })
+          .catch((error) => {
+            console.log(error);
+            toast(<NotificationError text="Failed to unlike product." />);
+            setLoading(false);
+          });
+      };
+
     const deleteProduct = async (product) => {
         setLoading(true);
         deleteProductAction(address, product.appId)
@@ -94,6 +125,8 @@ const Products = ({address, fetchBalance}) => {
                             product={product}
                             buyProduct={buyProduct}
                             deleteProduct={deleteProduct}
+                            likeProduct={likeProduct}
+                            unlikeProduct={unlikeProduct}
                             key={index}
                         />
                     ))}
