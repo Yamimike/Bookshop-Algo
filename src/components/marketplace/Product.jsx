@@ -1,11 +1,12 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
-import {Badge, Button, Card, Col, FloatingLabel, Form, Stack} from "react-bootstrap";
-import {microAlgosToString, truncateAddress} from "../../utils/conversions";
+import { Badge, Button, Card, Col, FloatingLabel, Form, Stack } from "react-bootstrap";
+import { microAlgosToString, truncateAddress } from "../../utils/conversions";
 import Identicon from "../utils/Identicon";
 
-const Product = ({address, product, buyProduct, deleteProduct}) => {
-    const {name, image, description, price, sold, appId, owner} =
+const Product = ({ address, product, buyProduct, deleteProduct, likeProduct,
+    unlikeProduct, }) => {
+    const { name, image, description, price, sold, appId, owner,} =
         product;
 
     const [count, setCount] = useState(1)
@@ -16,14 +17,14 @@ const Product = ({address, product, buyProduct, deleteProduct}) => {
                 <Card.Header>
                     <Stack direction="horizontal" gap={2}>
                         <span className="font-monospace text-secondary">{truncateAddress(owner)}</span>
-                        <Identicon size={28} address={owner}/>
+                        <Identicon size={28} address={owner} />
                         <Badge bg="secondary" className="ms-auto">
                             {sold} Sold
                         </Badge>
                     </Stack>
                 </Card.Header>
                 <div className="ratio ratio-4x3">
-                    <img src={image} alt={name} style={{objectFit: "cover"}}/>
+                    <img src={image} alt={name} style={{ objectFit: "cover" }} />
                 </div>
                 <Card.Body className="d-flex flex-column text-center">
                     <Card.Title>{name}</Card.Title>
@@ -51,6 +52,22 @@ const Product = ({address, product, buyProduct, deleteProduct}) => {
                         >
                             Buy for {microAlgosToString(price) * count} ALGO
                         </Button>
+                        <Button
+                            variant="outline-dark"
+                            onClick={() => likeProduct(product)}
+                            className="btn"
+                        >
+                            {product.like}
+                            <i className="bi bi-hand-thumbs-up-fill"></i>
+                        </Button>
+                        <Button
+                            variant="outline-dark"
+                            onClick={() => unlikeProduct(product)}
+                            className="btn"
+                        >
+                            {product.unlike}
+                            <i className="bi bi-hand-thumbs-down-fill"></i>
+                        </Button>
                         {product.owner === address &&
                             <Button
                                 variant="outline-danger"
@@ -71,7 +88,9 @@ Product.propTypes = {
     address: PropTypes.string.isRequired,
     product: PropTypes.instanceOf(Object).isRequired,
     buyProduct: PropTypes.func.isRequired,
-    deleteProduct: PropTypes.func.isRequired
+    deleteProduct: PropTypes.func.isRequired,
+    likeProduct: PropTypes.func.isRequired,
+    unlikeProduct: PropTypes.func.isRequired,
 };
 
 export default Product;
