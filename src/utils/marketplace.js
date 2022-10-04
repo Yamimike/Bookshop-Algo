@@ -16,12 +16,14 @@ import clearProgram from "!!raw-loader!../contracts/marketplace_clear.teal";
 import {base64ToUTF8String, utf8ToBase64String} from "./conversions";
 
 class Product {
-    constructor(name, image, description, price, sold, appId, owner) {
+    constructor(name, image, description, price, sold, like, unlike, appId, owner) {
         this.name = name;
         this.image = image;
         this.description = description;
         this.price = price;
         this.sold = sold;
+        this.like = like;
+        this.unlike = unlike;
         this.appId = appId;
         this.owner = owner;
     }
@@ -136,6 +138,100 @@ export const buyProductAction = async (senderAddress, product, count) => {
     console.log("Group transaction " + tx.txId + " confirmed in round " + confirmedTxn["confirmed-round"]);
 }
 
+// Like Product: Group transaction consisting of ApplicationCallTxn and PaymentTxn
+export const likeAction = async (senderAddress, product) => {
+    console.log("Like product...");
+  
+    let params = await algodClient.getTransactionParams().do();
+  
+    // Build required app args as Uint8Array
+    let likeArg = new TextEncoder().encode("like");
+  
+    let appArgs = [likeArg];
+  
+    // Create ApplicationCallTxn
+    let appCallTxn = algosdk.makeApplicationCallTxnFromObject({
+      from: senderAddress,
+      appIndex: product.appId,
+      onComplete: algosdk.OnApplicationComplete.NoOpOC,
+      suggestedParams: params,
+      appArgs: appArgs,
+    });
+  
+    let txnArray = [appCallTxn];
+  
+    // Create group transaction out of previously build transactions
+    let groupID = algosdk.computeGroupID(txnArray);
+    for (let i = 0; i < 1; i++) txnArray[i].group = groupID;
+  
+    // Sign & submit the group transaction
+    let signedTxn = await myAlgoConnect.signTransaction(
+      txnArray.map((txn) => txn.toByte())
+    );
+    console.log("Signed group transaction");
+    let tx = await algodClient
+      .sendRawTransaction(signedTxn.map((txn) => txn.blob))
+      .do();
+  
+    // Wait for group transaction to be confirmed
+    let confirmedTxn = await algosdk.waitForConfirmation(algodClient, tx.txId, 4);
+  
+    // Notify about completion
+    console.log(
+      "Group transaction " +
+        tx.txId +
+        " confirmed in round " +
+        confirmedTxn["confirmed-round"]
+    );
+  };
+  
+  // Unlike Product: Group transaction consisting of ApplicationCallTxn and PaymentTxn
+export const unlikeAction = async (senderAddress, product) => {
+    console.log("unlike product...");
+  
+    let params = await algodClient.getTransactionParams().do();
+  
+    // Build required app args as Uint8Array
+    let unlikeArg = new TextEncoder().encode("unlike");
+  
+    let appArgs = [unlikeArg];
+  
+    // Create ApplicationCallTxn
+    let appCallTxn = algosdk.makeApplicationCallTxnFromObject({
+      from: senderAddress,
+      appIndex: product.appId,
+      onComplete: algosdk.OnApplicationComplete.NoOpOC,
+      suggestedParams: params,
+      appArgs: appArgs,
+    });
+  
+    let txnArray = [appCallTxn];
+  
+    // Create group transaction out of previously build transactions
+    let groupID = algosdk.computeGroupID(txnArray);
+    for (let i = 0; i < 1; i++) txnArray[i].group = groupID;
+  
+    // Sign & submit the group transaction
+    let signedTxn = await myAlgoConnect.signTransaction(
+      txnArray.map((txn) => txn.toByte())
+    );
+    console.log("Signed group transaction");
+    let tx = await algodClient
+      .sendRawTransaction(signedTxn.map((txn) => txn.blob))
+      .do();
+  
+    // Wait for group transaction to be confirmed
+    let confirmedTxn = await algosdk.waitForConfirmation(algodClient, tx.txId, 4);
+  
+    // Notify about completion
+    console.log(
+      "Group transaction " +
+        tx.txId +
+        " confirmed in round " +
+        confirmedTxn["confirmed-round"]
+    );
+  };
+
 // DELETE PRODUCT: ApplicationDeleteTxn
 export const deleteProductAction = async (senderAddress, index) => {
     console.log("Deleting application...");
@@ -210,6 +306,8 @@ const getApplication = async (appId) => {
         let description = ""
         let price = 0
         let sold = 0
+        let like = 0;
+        let unlike = 0;
 
         const getField = (fieldName, globalState) => {
             return globalState.find(state => {
@@ -239,8 +337,15 @@ const getApplication = async (appId) => {
         if (getField("SOLD", globalState) !== undefined) {
             sold = getField("SOLD", globalState).value.uint
         }
+        if (getField("Like", globalState) !== undefined) {
+            like = getField("Like", globalState).value.uint;
+          }
+      
+          if (getField("Unlike", globalState) !== undefined) {
+            unlike = getField("Unlike", globalState).value.uint;
+          }
 
-        return new Product(name, image, description, price, sold, appId, owner)
+        return new Product(name, image, description, price, sold, like, unlike, appId, owner)
     } catch (err) {
         return null;
     }
