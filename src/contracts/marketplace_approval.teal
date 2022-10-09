@@ -2,17 +2,43 @@
 txn ApplicationID
 int 0
 ==
-bnz main_l8
+bnz main_l12
 txn OnCompletion
 int DeleteApplication
 ==
-bnz main_l7
+bnz main_l11
 txna ApplicationArgs 0
 byte "buy"
 ==
-bnz main_l4
+bnz main_l8
+txna ApplicationArgs 0
+byte "like"
+==
+bnz main_l7
+txna ApplicationArgs 0
+byte "unlike"
+==
+bnz main_l6
 err
-main_l4:
+main_l6:
+byte "Unlike"
+byte "Unlike"
+app_global_get
+int 1
++
+app_global_put
+int 1
+return
+main_l7:
+byte "Like"
+byte "Like"
+app_global_get
+int 1
++
+app_global_put
+int 1
+return
+main_l8:
 global GroupSize
 int 2
 ==
@@ -36,10 +62,10 @@ gtxn 0 Sender
 ==
 &&
 &&
-bnz main_l6
+bnz main_l10
 int 0
 return
-main_l6:
+main_l10:
 byte "SOLD"
 byte "SOLD"
 app_global_get
@@ -49,12 +75,12 @@ btoi
 app_global_put
 int 1
 return
-main_l7:
+main_l11:
 txn Sender
 global CreatorAddress
 ==
 return
-main_l8:
+main_l12:
 txn NumAppArgs
 int 4
 ==
@@ -82,6 +108,12 @@ txna ApplicationArgs 3
 btoi
 app_global_put
 byte "SOLD"
+int 0
+app_global_put
+byte "Like"
+int 0
+app_global_put
+byte "Unlike"
 int 0
 app_global_put
 int 1
