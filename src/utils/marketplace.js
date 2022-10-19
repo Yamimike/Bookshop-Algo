@@ -15,17 +15,18 @@ import approvalProgram from "!!raw-loader!../contracts/marketplace_approval.teal
 import clearProgram from "!!raw-loader!../contracts/marketplace_clear.teal";
 import {base64ToUTF8String, utf8ToBase64String} from "./conversions";
 
-class Product {
-    constructor(name, image, description, price, sold, like, unlike, appId, owner) {
+class Book {
+    constructor(name, image, description, price, sold, likes, dislikes, appId, owner,book) {
         this.name = name;
         this.image = image;
         this.description = description;
         this.price = price;
         this.sold = sold;
-        this.like = like;
-        this.unlike = unlike;
+        this.likes = likes;
+        this.dislikes = dislikes;
         this.appId = appId;
         this.owner = owner;
+        this.book = book;
     }
 }
 
@@ -37,9 +38,9 @@ const compileProgram = async (programSource) => {
     return new Uint8Array(Buffer.from(compileResponse.result, "base64"));
 }
 
-// CREATE PRODUCT: ApplicationCreateTxn
-export const createProductAction = async (senderAddress, product) => {
-    console.log("Adding product...")
+// CREATE Book: ApplicationCreateTxn
+export const createBookAction = async (senderAddress, book) => {
+    console.log("Adding book...")
 
     let params = await algodClient.getTransactionParams().do();
 
@@ -49,12 +50,13 @@ export const createProductAction = async (senderAddress, product) => {
 
     // Build note to identify transaction later and required app args as Uint8Arrays
     let note = new TextEncoder().encode(marketplaceNote);
-    let name = new TextEncoder().encode(product.name);
-    let image = new TextEncoder().encode(product.image);
-    let description = new TextEncoder().encode(product.description);
-    let price = algosdk.encodeUint64(product.price);
+    let name = new TextEncoder().encode(book.name);
+    let image = new TextEncoder().encode(book.image);
+    let description = new TextEncoder().encode(book.description);
+    let owner = new TextEncoder().encode(senderAddress);
+    let price = algosdk.encodeUint64(book.price);
 
-    let appArgs = [name, image, description, price]
+    let appArgs = [name, image, description, price,owner]
 
     // Create ApplicationCreateTxn
     let txn = algosdk.makeApplicationCreateTxnFromObject({
@@ -93,8 +95,8 @@ export const createProductAction = async (senderAddress, product) => {
 }
 
 // BUY PRODUCT: Group transaction consisting of ApplicationCallTxn and PaymentTxn
-export const buyProductAction = async (senderAddress, product, count) => {
-    console.log("Buying product...");
+export const buyBookAction = async (senderAddress, book, count) => {
+    console.log("Buying book...");
 
     let params = await algodClient.getTransactionParams().do();
 
@@ -106,7 +108,7 @@ export const buyProductAction = async (senderAddress, product, count) => {
     // Create ApplicationCallTxn
     let appCallTxn = algosdk.makeApplicationCallTxnFromObject({
         from: senderAddress,
-        appIndex: product.appId,
+        appIndex: book.appId,
         onComplete: algosdk.OnApplicationComplete.NoOpOC,
         suggestedParams: params,
         appArgs: appArgs
@@ -115,8 +117,8 @@ export const buyProductAction = async (senderAddress, product, count) => {
     // Create PaymentTxn
     let paymentTxn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
         from: senderAddress,
-        to: product.owner,
-        amount: product.price * count,
+        to: book.owner,
+        amount: book.price * count,
         suggestedParams: params
     })
 
@@ -138,21 +140,21 @@ export const buyProductAction = async (senderAddress, product, count) => {
     console.log("Group transaction " + tx.txId + " confirmed in round " + confirmedTxn["confirmed-round"]);
 }
 
-// Like Product: Group transaction consisting of ApplicationCallTxn and PaymentTxn
-export const likeAction = async (senderAddress, product) => {
-    console.log("Like product...");
+// Like     Book: Group transaction consisting of ApplicationCallTxn and PaymentTxn
+export const likeAction = async (senderAddress, book) => {
+    console.log("Likes book...");
   
     let params = await algodClient.getTransactionParams().do();
   
     // Build required app args as Uint8Array
-    let likeArg = new TextEncoder().encode("like");
+    let likesArg = new TextEncoder().encode("likes");
   
-    let appArgs = [likeArg];
+    let appArgs = [likesArg];
   
     // Create ApplicationCallTxn
     let appCallTxn = algosdk.makeApplicationCallTxnFromObject({
       from: senderAddress,
-      appIndex: product.appId,
+      appIndex: book.appId,
       onComplete: algosdk.OnApplicationComplete.NoOpOC,
       suggestedParams: params,
       appArgs: appArgs,
@@ -185,21 +187,21 @@ export const likeAction = async (senderAddress, product) => {
     );
   };
   
-  // Unlike Product: Group transaction consisting of ApplicationCallTxn and PaymentTxn
-export const unlikeAction = async (senderAddress, product) => {
-    console.log("unlike product...");
+  // Dislikes Book: Group transaction consisting of ApplicationCallTxn and PaymentTxn
+export const dislikesAction = async (senderAddress, book) => {
+    console.log("dislikes book...");
   
     let params = await algodClient.getTransactionParams().do();
   
     // Build required app args as Uint8Array
-    let unlikeArg = new TextEncoder().encode("unlike");
+    let dislikesArg = new TextEncoder().encode("dislikes");
   
-    let appArgs = [unlikeArg];
+    let appArgs = [dislikesArg];
   
     // Create ApplicationCallTxn
     let appCallTxn = algosdk.makeApplicationCallTxnFromObject({
       from: senderAddress,
-      appIndex: product.appId,
+      appIndex: book.appId,
       onComplete: algosdk.OnApplicationComplete.NoOpOC,
       suggestedParams: params,
       appArgs: appArgs,
@@ -232,8 +234,8 @@ export const unlikeAction = async (senderAddress, product) => {
     );
   };
 
-// DELETE PRODUCT: ApplicationDeleteTxn
-export const deleteProductAction = async (senderAddress, index) => {
+// DELETE   BOOK: ApplicationDeleteTxn
+export const deleteBookAction = async (senderAddress, index) => {
     console.log("Deleting application...");
 
     let params = await algodClient.getTransactionParams().do();
@@ -263,9 +265,9 @@ export const deleteProductAction = async (senderAddress, index) => {
     console.log("Deleted app-id: ", appId);
 }
 
-// GET PRODUCTS: Use indexer
-export const getProductsAction = async () => {
-    console.log("Fetching products...")
+// GET BOOKS: Use indexer
+export const getBooksAction = async () => {
+    console.log("Fetching books...")
     let note = new TextEncoder().encode(marketplaceNote);
     let encodedNote = Buffer.from(note).toString("base64");
 
@@ -275,19 +277,19 @@ export const getProductsAction = async () => {
         .txType("appl")
         .minRound(minRound)
         .do();
-    let products = []
+    let books = []
     for (const transaction of transactionInfo.transactions) {
         let appId = transaction["created-application-index"]
         if (appId) {
             // Step 2: Get each application by application id
-            let product = await getApplication(appId)
-            if (product) {
-                products.push(product)
+            let book = await getApplication(appId)
+            if (book) {
+                books.push(book)
             }
         }
     }
-    console.log("Products fetched.")
-    return products
+    console.log("Books fetched.")
+    return books
 }
 
 const getApplication = async (appId) => {
@@ -299,15 +301,15 @@ const getApplication = async (appId) => {
         }
         let globalState = response.application.params["global-state"]
 
-        // 2. Parse fields of response and return product
+        // 2. Parse fields of response and return book
         let owner = response.application.params.creator
         let name = ""
         let image = ""
         let description = ""
         let price = 0
         let sold = 0
-        let like = 0;
-        let unlike = 0;
+        let likes = 0;
+        let dislikes = 0;
 
         const getField = (fieldName, globalState) => {
             return globalState.find(state => {
@@ -337,15 +339,15 @@ const getApplication = async (appId) => {
         if (getField("SOLD", globalState) !== undefined) {
             sold = getField("SOLD", globalState).value.uint
         }
-        if (getField("Like", globalState) !== undefined) {
-            like = getField("Like", globalState).value.uint;
+        if (getField("Likes", globalState) !== undefined) {
+            likes = getField("Likes", globalState).value.uint;
           }
       
-          if (getField("Unlike", globalState) !== undefined) {
-            unlike = getField("Unlike", globalState).value.uint;
+          if (getField("dislikes", globalState) !== undefined) {
+            dislikes = getField("dislikes", globalState).value.uint;
           }
 
-        return new Product(name, image, description, price, sold, like, unlike, appId, owner)
+        return new Book(name, image, description, price, sold, likes, dislikes, appId, owner)
     } catch (err) {
         return null;
     }

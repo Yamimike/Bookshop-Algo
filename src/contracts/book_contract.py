@@ -1,33 +1,37 @@
 from pyteal import *
 
 
-class Product:
+class Book:
     class Variables:
         name = Bytes("NAME")
         image = Bytes("IMAGE")
         description = Bytes("DESCRIPTION")
         price = Bytes("PRICE")
         sold = Bytes("SOLD")
-        like = Bytes("Like")  # Uint64
-        unlike = Bytes("Unlike")  # Uint64
+        likes = Bytes("LIKES")  # Uint64
+        dislikes = Bytes("DISLIKES")  # Uint64
+        address = Bytes("ADDRESS")
+        owner = Bytes("OWNER")
 
     class AppMethods:
         like = Bytes("like")
-        unlike = Bytes("unlike")
+        dislike = Bytes("dislike")
         buy = Bytes("buy")
 
     def application_creation(self):
         return Seq([
             Assert(Txn.application_args.length() == Int(4)),
-            Assert(Txn.note() == Bytes("tutorial-marketplace:uv1")),
+            Assert(Txn.note() == Bytes("books:uv1")),
             Assert(Btoi(Txn.application_args[3]) > Int(0)),
             App.globalPut(self.Variables.name, Txn.application_args[0]),
             App.globalPut(self.Variables.image, Txn.application_args[1]),
             App.globalPut(self.Variables.description, Txn.application_args[2]),
             App.globalPut(self.Variables.price, Btoi(Txn.application_args[3])),
             App.globalPut(self.Variables.sold, Int(0)),
-            App.globalPut(self.Variables.like, Int(0)),
-            App.globalPut(self.Variables.unlike, Int(0)),
+            App.globalPut(self.Variables.likes, Int(0)),
+            App.globalPut(self.Variables.dislikes, Int(0)),
+            App.globalPut(self.Variables.address, Global.creator_address()),
+            App.globalPut(self.Variables.owner, Txn.application_args[1]),
             Approve()
         ])
 
@@ -71,13 +75,13 @@ class Product:
         )
 
         return Seq([
-            App.globalPut(self.Variables.like, App.globalGet(self.Variables.like) + Int(1)),
+            App.globalPut(self.Variables.likes, App.globalGet(self.Variables.likes) + Int(1)),
             Approve()
         ])
 
 
-    # unlike
-    def unlike(self):
+    # dislike
+    def dislike(self):
 
         Assert(
             And(
@@ -94,7 +98,7 @@ class Product:
         )
 
         return Seq([
-            App.globalPut(self.Variables.unlike, App.globalGet(self.Variables.unlike) + Int(1)),
+            App.globalPut(self.Variables.dislikes, App.globalGet(self.Variables.dislikes) + Int(1)),
             Approve()
         ])
         
@@ -107,7 +111,7 @@ class Product:
             [Txn.on_completion() == OnComplete.DeleteApplication, self.application_deletion()],
             [Txn.application_args[0] == self.AppMethods.buy, self.buy()],
             [Txn.application_args[0] == self.AppMethods.like, self.like()],
-            [Txn.application_args[0] == self.AppMethods.unlike, self.unlike()]
+            [Txn.application_args[0] == self.AppMethods.dislike, self.dislike()]
         )
 
     def approval_program(self):
