@@ -4,10 +4,10 @@ import { Badge, Button, Card, Col, FloatingLabel, Form, Stack } from "react-boot
 import { microAlgosToString, truncateAddress } from "../../utils/conversions";
 import Identicon from "../utils/Identicon";
 
-const Product = ({ address, product, buyProduct, deleteProduct, likeProduct,
-    unlikeProduct, }) => {
+const Book = ({ address, book, buyBook, deleteBook, likeBook,
+    dislikeBook, }) => {
     const { name, image, description, price, sold, appId, owner,} =
-        product;
+        book;
 
     const [count, setCount] = useState(1)
 
@@ -47,31 +47,31 @@ const Product = ({ address, product, buyProduct, deleteProduct, likeProduct,
                         </FloatingLabel>
                         <Button
                             variant="outline-dark"
-                            onClick={() => buyProduct(product, count)}
+                            onClick={() => buyBook(book, count)}
                             className="w-75 py-3"
                         >
                             Buy for {microAlgosToString(price) * count} ALGO
                         </Button>
                         <Button
                             variant="outline-dark"
-                            onClick={() => likeProduct(product)}
+                            onClick={() => likeBook(book)}
                             className="btn"
                         >
-                            {product.like}
+                            {book.like}
                             <i className="bi bi-hand-thumbs-up-fill"></i>
                         </Button>
                         <Button
                             variant="outline-dark"
-                            onClick={() => unlikeProduct(product)}
+                            onClick={() => dislikeBook(book)}
                             className="btn"
                         >
-                            {product.unlike}
+                            {book.dislike}
                             <i className="bi bi-hand-thumbs-down-fill"></i>
                         </Button>
-                        {product.owner === address &&
+                        {book.owner === address &&
                             <Button
                                 variant="outline-danger"
-                                onClick={() => deleteProduct(product)}
+                                onClick={() => deleteBook(book)}
                                 className="btn"
                             >
                                 <i className="bi bi-trash"></i>
@@ -84,13 +84,13 @@ const Product = ({ address, product, buyProduct, deleteProduct, likeProduct,
     );
 };
 
-Product.propTypes = {
+Book.propTypes = {
     address: PropTypes.string.isRequired,
-    product: PropTypes.instanceOf(Object).isRequired,
-    buyProduct: PropTypes.func.isRequired,
-    deleteProduct: PropTypes.func.isRequired,
-    likeProduct: PropTypes.func.isRequired,
-    unlikeProduct: PropTypes.func.isRequired,
+    book: PropTypes.instanceOf(Object).isRequired,
+    buyBook: PropTypes.func.isRequired,
+    deleteBook: PropTypes.func.isRequired,
+    likeBook: PropTypes.func.isRequired,
+    dislikeBook: PropTypes.func.isRequired,
 };
 
-export default Product;
+export default Book;

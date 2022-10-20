@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import {Button, FloatingLabel, Form, Modal} from "react-bootstrap";
 import {stringToMicroAlgos} from "../../utils/conversions";
 
-const AddProduct = ({createProduct}) => {
+const AddBook = ({createBook}) => {
     const [name, setName] = useState("");
     const [image, setImage] = useState("");
     const [description, setDescription] = useState("");
@@ -30,13 +30,13 @@ const AddProduct = ({createProduct}) => {
             </Button>
             <Modal show={show} onHide={handleClose} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>New Product</Modal.Title>
+                    <Modal.Title>New Book</Modal.Title>
                 </Modal.Header>
                 <Form>
                     <Modal.Body>
                         <FloatingLabel
                             controlId="inputName"
-                            label="Product name"
+                            label="Book name"
                             className="mb-3"
                         >
                             <Form.Control
@@ -44,7 +44,7 @@ const AddProduct = ({createProduct}) => {
                                 onChange={(e) => {
                                     setName(e.target.value);
                                 }}
-                                placeholder="Enter name of product"
+                                placeholder="Enter name of book"
                             />
                         </FloatingLabel>
                         <FloatingLabel
@@ -98,7 +98,7 @@ const AddProduct = ({createProduct}) => {
                         variant="dark"
                         disabled={!isFormFilled()}
                         onClick={() => {
-                            createProduct({
+                            createBook({
                                 name,
                                 image,
                                 description,
@@ -107,7 +107,7 @@ const AddProduct = ({createProduct}) => {
                             handleClose();
                         }}
                     >
-                        Save product
+                        Save book
                     </Button>
                 </Modal.Footer>
             </Modal>
@@ -115,8 +115,8 @@ const AddProduct = ({createProduct}) => {
     );
 };
 
-AddProduct.propTypes = {
-    createProduct: PropTypes.func.isRequired,
+AddBook.propTypes = {
+    createBook: PropTypes.func.isRequired,
 };
 
-export default AddProduct;
+export default AddBook;

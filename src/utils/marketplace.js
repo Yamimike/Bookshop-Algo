@@ -11,8 +11,8 @@ import {
     numLocalInts
 } from "./constants";
 /* eslint import/no-webpack-loader-syntax: off */
-import approvalProgram from "!!raw-loader!../contracts/marketplace_approval.teal";
-import clearProgram from "!!raw-loader!../contracts/marketplace_clear.teal";
+import approvalProgram from "!!raw-loader!../contracts/books_approval.teal";
+import clearProgram from "!!raw-loader!../contracts/books_clear.teal";
 import {base64ToUTF8String, utf8ToBase64String} from "./conversions";
 
 class Book {
@@ -94,7 +94,7 @@ export const createBookAction = async (senderAddress, book) => {
     return appId;
 }
 
-// BUY PRODUCT: Group transaction consisting of ApplicationCallTxn and PaymentTxn
+// BUY BOOK: Group transaction consisting of ApplicationCallTxn and PaymentTxn
 export const buyBookAction = async (senderAddress, book, count) => {
     console.log("Buying book...");
 

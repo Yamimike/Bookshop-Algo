@@ -3,7 +3,7 @@ import Cover from "./components/Cover";
 import './App.css';
 import Wallet from "./components/Wallet";
 import {Container, Nav} from "react-bootstrap";
-import Products from "./components/marketplace/Products";
+import Books from "./components/marketplace/Books";
 import {indexerClient, myAlgoConnect} from "./utils/constants";
 import {Notification} from "./components/utils/Notifications";
 import coverImg from "./assets/img/book.jpg"
@@ -63,7 +63,7 @@ const App = function AppWrapper() {
                     </Nav>
                     <Header />
                     <main>
-                    <Products address={address} fetchBalance={fetchBalance} />
+                    <Books address={address} fetchBalance={fetchBalance} />
                     </main>
                     <section id="about">
                         <div class="about-wrapper container">
