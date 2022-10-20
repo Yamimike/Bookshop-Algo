@@ -164,7 +164,7 @@ const App = function AppWrapper() {
                     </section>
                 </Container><Footer /></>
             ) : (
-                <Cover name={"Book Shop"} coverImg={coverImg} connect={connectWallet}/>
+                <Cover name={"Books Ville"} coverImg={coverImg} connect={connectWallet}/>
             )}
         </>
     );

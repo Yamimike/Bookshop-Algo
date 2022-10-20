@@ -58,7 +58,7 @@ const Book = ({ address, book, buyBook, deleteBook, likeBook,
                             className="btn"
                         >
                             {book.like}
-                            <i className="bi bi-hand-thumbs-up-fill"></i>
+                            <i class="bi bi-emoji-smile"></i>
                         </Button>
                         <Button
                             variant="outline-dark"
@@ -66,7 +66,7 @@ const Book = ({ address, book, buyBook, deleteBook, likeBook,
                             className="btn"
                         >
                             {book.dislike}
-                            <i className="bi bi-hand-thumbs-down-fill"></i>
+                            <i class="bi bi-emoji-frown-fill"></i>
                         </Button>
                         {book.owner === address &&
                             <Button

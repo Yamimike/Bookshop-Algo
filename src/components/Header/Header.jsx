@@ -32,7 +32,7 @@ const Header = () => {
             <Stack spacing={2} sx={{ flexGrow: 0 }}>
                 <ThemeProvider theme={darkTheme}>
                     <AppBar className='headerText' position="static" color="primary" enableColorOnDark>
-                        {appBarLabel('Thank you for landing at Booksville.Click the button to add your book')}
+                        {appBarLabel('Welcome to  Booksville.Click the book button to feature your book')}
                     </AppBar>
                 </ThemeProvider>
             </Stack>

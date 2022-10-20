@@ -13,7 +13,7 @@ const Cover = ({name, coverImg, connect}) => {
                     <img src={coverImg} alt=""/>
                 </div>
                 <h1>{name}</h1>
-                <p> connect your wallet to continue.</p>
+                <p> Feature Book.</p>
                 <Button
                     onClick={() => connect()}
                     variant="outline-light"
@@ -22,7 +22,7 @@ const Cover = ({name, coverImg, connect}) => {
                     Connect Wallet
                 </Button>
             </div>
-            <p className="mt-auto text-secondary">Powered by Algorand</p>
+            <p className="mt-auto text-secondary">Knowledge is Power</p>
         </div>
     );
 };
