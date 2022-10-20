@@ -26,7 +26,7 @@ const AddBook = ({createBook}) => {
                 className="rounded-pill px-0"
                 style={{width: "38px"}}
             >
-                <i className="bi bi-plus"></i>
+                 <i class="bi bi-book"></i>
             </Button>
             <Modal show={show} onHide={handleClose} centered>
                 <Modal.Header closeButton>
