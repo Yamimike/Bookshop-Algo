@@ -31,7 +31,7 @@ class Book:
             App.globalPut(self.Variables.likes, Int(0)),
             App.globalPut(self.Variables.dislikes, Int(0)),
             App.globalPut(self.Variables.address, Global.creator_address()),
-            App.globalPut(self.Variables.owner, Txn.application_args[1]),
+            App.globalPut(self.Variables.owner, Txn.sender()),
             Approve()
         ])
 
