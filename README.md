@@ -19,7 +19,7 @@ Books ville is the best online bookshop platform that you can purchase a book an
 
 1. Clone repo
    ```sh
-   git clone https://github.com/dacadeorg/algorand-react-marketplace.git
+   git clone https://github.com/Tevin-Isaac/BooksVille.git
    ```
 
 2. Install packages
@@ -71,11 +71,7 @@ simply open an issue with the tag "enhancement". Don't forget to give the projec
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/cloudy.png)
 
 
-<!-- LICENSE -->
 
-## :policeman: License
-
-Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -115,13 +111,13 @@ This  Learning project was inspired through  - [Dacade](https://dacade.org/commu
 
 [license-shield]: https://img.shields.io/github/license/dacadeorg/algorand-react-marketplace.svg?style=for-the-badge
 
-[license-url]: ./README/LICENSE.txt
+
 
 [product-screenshot]: ./README/images/shot1.png
 
 [product-screenshot-2]: ./README/images/shot2.png
 
-
+## Tested Sandbox goal  Accounts
 [offline]       GK3EE3HAAFB2IKOXKMBOJEDJSKLFYPEUBXAFD2M7EFFDCOBGVDCPLUZIAQ      GK3EE3HAAFB2IKOXKMBOJEDJSKLFYPEUBXAFD2M7EFFDCOBGVDCPLUZIAQ    1000082000590926 microAlgos     [created app IDs: 1]
 [offline]       2LV3VKAQGGZFQUSMK5ZWT4SNTYEXVBLFI2NRK4TY3J4LT4UGL5NDIMWV4A      2LV3VKAQGGZFQUSMK5ZWT4SNTYEXVBLFI2NRK4TY3J4LT4UGL5NDIMWV4A    4000328000000000 microAlgos
 [online]        6MNXJY4HELXUH43WDGUSFALT7P7KHKP6MGRXSU2AXK2N2GEYL4AGXDNUE4      6MNXJY4HELXUH43WDGUSFALT7P7KHKP6MGRXSU2AXK2N2GEYL4AGXDNUE4    4000328000000000 microAlgos
