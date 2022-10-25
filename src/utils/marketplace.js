@@ -41,8 +41,11 @@ const compileProgram = async (programSource) => {
 // CREATE Book: ApplicationCreateTxn
 export const createBookAction = async (senderAddress, book) => {
     console.log("Adding book...")
+    console.log(book.price);
 
     let params = await algodClient.getTransactionParams().do();
+    params.fee = algosdk.ALGORAND_MIN_TX_FEE;
+    params.flatFee = true;
 
     // Compile programs
     const compiledApprovalProgram = await compileProgram(approvalProgram)
@@ -53,10 +56,9 @@ export const createBookAction = async (senderAddress, book) => {
     let name = new TextEncoder().encode(book.name);
     let image = new TextEncoder().encode(book.image);
     let description = new TextEncoder().encode(book.description);
-    let owner = new TextEncoder().encode(senderAddress);
     let price = algosdk.encodeUint64(book.price);
 
-    let appArgs = [name, image, description, price,owner]
+    let appArgs = [name, image, description, price]
 
     // Create ApplicationCreateTxn
     let txn = algosdk.makeApplicationCreateTxnFromObject({
