@@ -13,6 +13,10 @@ class Book:
         address = Bytes("ADDRESS")
         owner = Bytes("OWNER")
 
+    class LocalVariables:
+        has_liked = Bytes("HASLIKED") # bool, 0- false, 1 - true
+        has_disliked = Bytes("HASDISLIKED") # bool, 0- false, 1 - true
+
     class AppMethods:
         like = Bytes("like")
         dislike = Bytes("dislike")
@@ -33,6 +37,14 @@ class Book:
             App.globalPut(self.Variables.address, Global.creator_address()),
             App.globalPut(self.Variables.owner, Txn.sender()),
             Approve()
+        ])
+
+    # Optin function required by the local variables
+    def setOptIn(self):
+        return Seq([
+            App.localPut(Txn.sender(), self.LocalVariables.has_liked, Int(0)),
+            App.localPut(Txn.sender(), self.LocalVariables.has_disliked, Int(0)),
+            Approve()  
         ])
 
     def buy(self):
@@ -59,35 +71,74 @@ class Book:
     # like
     def like(self):
 
+        # Ensure that the owner cannot like
+        Assert(Txn.sender != Global.creator_address() )
+
+        has_alreadydisliked = App.localGet(Txn.sender(), self.LocalVariables.has_disliked) == Int(1)
+
+        toggle_state = Seq([
+            App.localPut(Txn.sender(), self.LocalVariables.has_disliked, Int(0)),
+            App.globalPut(self.Variables.dislikes, App.globalGet(self.Variables.dislikes) - Int(1)),
+            Approve()
+        ])
+
+        If(has_alreadydisliked).Then(toggle_state)
+
         Assert(
             And(
                     # The number of transactions within the group transaction must be exactly 2.
                     # first one being the adopt function and the second being the payment transactions
                     Global.group_size() == Int(1),
+
+                    #Checks if the user has not already liked
+                    App.localGet(Txn.sender(), self.LocalVariables.has_liked) == Int(0),
+
+
 
                     # Txn.applications[0] is a special index denoting the current app being interacted with
                     Txn.applications.length() == Int(1),
 
                     # The number of arguments attached to the transaction should be exactly 2.
                     Txn.application_args.length() == Int(1),
-
             ),
         )
 
         return Seq([
             App.globalPut(self.Variables.likes, App.globalGet(self.Variables.likes) + Int(1)),
+
+            # Sets the bool to true
+            App.localPut(Txn.sender(), self.LocalVariables.has_liked, Int(1)),
             Approve()
         ])
 
 
     # dislike
     def dislike(self):
+        # Ensure that the owner cannot dislike
+
+        Assert(Txn.sender != Global.creator_address() )
+
+
+        # Checks if the user has already liked
+        has_alreadyliked = App.localGet(Txn.sender(), self.LocalVariables.has_liked) == Int(1)
+
+        # If the user has liked, it toggles to to false and removes the like
+        toggle_state = Seq([
+            App.localPut(Txn.sender(), self.LocalVariables.has_liked, Int(0)),
+            App.globalPut(self.Variables.likes, App.globalGet(self.Variables.likes) - Int(1)),
+            Approve()
+        ])
+
+        If(has_alreadyliked).Then(toggle_state)
 
         Assert(
             And(
                     # The number of transactions within the group transaction must be exactly 2.
                     # first one being the adopt function and the second being the payment transactions
                     Global.group_size() == Int(1),
+
+                    #Checks if the user has not already disliked
+                    App.localGet(Txn.sender(), self.LocalVariables.has_disliked) == Int(0),
 
                     # Txn.applications[0] is a special index denoting the current app being interacted with
                     Txn.applications.length() == Int(1),
@@ -99,6 +150,8 @@ class Book:
 
         return Seq([
             App.globalPut(self.Variables.dislikes, App.globalGet(self.Variables.dislikes) + Int(1)),
+            # Sets the bool to true
+            App.localPut(Txn.sender(), self.LocalVariables.has_disliked, Int(1)),
             Approve()
         ])
         
@@ -109,6 +162,7 @@ class Book:
         return Cond(
             [Txn.application_id() == Int(0), self.application_creation()],
             [Txn.on_completion() == OnComplete.DeleteApplication, self.application_deletion()],
+            [Txn.on_completion() == OnComplete.OptIn, self.setOptIn()],
             [Txn.application_args[0] == self.AppMethods.buy, self.buy()],
             [Txn.application_args[0] == self.AppMethods.like, self.like()],
             [Txn.application_args[0] == self.AppMethods.dislike, self.dislike()]
