@@ -22,10 +22,10 @@ export const minRound = 21540981;
 export const marketplaceNote = "books:uv1"
 
 // Maximum local storage allocation, immutable
-export const numLocalInts = 0;
+export const numLocalInts = 2;
 export const numLocalBytes = 0;
 // Maximum global storage allocation, immutable
-export const numGlobalInts = 2; // Global variables stored as Int: count, sold
-export const numGlobalBytes = 3; // Global variables stored as Bytes: name, description, image
+export const numGlobalInts = 4; // Global variables stored as Int: count, sold
+export const numGlobalBytes = 5; // Global variables stored as Bytes: name, description, image
 
 export const ALGORAND_DECIMALS = 6;
