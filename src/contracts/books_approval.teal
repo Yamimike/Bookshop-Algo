@@ -21,6 +21,14 @@ byte "dislike"
 bnz main_l6
 err
 main_l6:
+global GroupSize
+int 1
+==
+txn NumAppArgs
+int 1
+==
+&&
+assert
 byte "DISLIKES"
 byte "DISLIKES"
 app_global_get
@@ -30,6 +38,14 @@ app_global_put
 int 1
 return
 main_l7:
+global GroupSize
+int 1
+==
+txn NumAppArgs
+int 1
+==
+&&
+assert
 byte "LIKES"
 byte "LIKES"
 app_global_get
